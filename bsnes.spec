@@ -1,4 +1,4 @@
-%define vernumber 081
+%define vernumber 082
 %define name	bsnes
 %define version 0.%{vernumber}
 %define release %mkrel 1
