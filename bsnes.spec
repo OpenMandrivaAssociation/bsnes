@@ -19,6 +19,7 @@ BuildRequires:	gtk+2-devel
 BuildRequires:	qt4-devel
 BuildRequires:	SDL-devel
 BuildRequires:	pulseaudio-devel
+BuildRequires:	libgomp-devel
 Requires:	%{name}-binary
 
 %description
