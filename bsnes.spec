@@ -160,6 +160,10 @@ BSNES binary compiled with GTK/performance profile.
 %build
 pushd %{name}
 
+%if %{mdvver} > 201100
+%__perl -pi -e "s/Q_MOC_OUTPUT_REVISION != 62/Q_MOC_OUTPUT_REVISION != 63/g" phoenix/qt/platform.moc
+%endif
+
 %__mkdir build
 
 %make compiler=gcc phoenix=qt profile=compatibility
