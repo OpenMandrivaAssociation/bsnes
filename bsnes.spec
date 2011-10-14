@@ -1,4 +1,4 @@
-%define vernumber 082
+%define vernumber 083
 %define name	bsnes
 %define version 0.%{vernumber}
 %define release %mkrel 1
@@ -10,7 +10,7 @@ Release:	%{release}
 License:	GPLv2
 Group:		Emulators
 Source0:	%{name}_v%{vernumber}-source.tar.bz2
-Patch0:		bsnes-081-datapath.patch
+Patch0:		bsnes-083-datapath.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
 BuildRequires:	libao-devel
 BuildRequires:	libxv-devel
@@ -32,6 +32,8 @@ The emulator itself was not derived from any existing emulator source
 code, such as SNES9x. It was written from scratch by myself.
 Any similarities to other emulators are merely coincidental.
 
+BSNES also has Game Boy and NES emulation support (not very complete yet).
+
 Important! Most likely you won't be able to run ROMs until you "purify"
 them with snespurify utility.
 
@@ -43,7 +45,7 @@ settings, filters/shaders and hardware combination.
 %{_datadir}/pixmaps/%{name}.png
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/shaders
-%{_datadir}/%{name}/cheats.xml
+%{_datadir}/%{name}/cheats.bml
 %{_datadir}/%{name}/shaders/*.shader
 %{_libdir}/%{name}/filters/*.filter
 
@@ -219,7 +221,7 @@ pushd %{name}
 %__install -m 644 data/%{name}.png %{buildroot}%{_datadir}/pixmaps/%{name}.png
 
 #install cheats
-%__install -m 644 data/cheats.xml %{buildroot}%{_datadir}/%{name}/cheats.xml
+%__install -m 644 data/cheats.bml %{buildroot}%{_datadir}/%{name}/cheats.bml
 
 #install binaries
 %__install -m 755 build/%{name}-qt4-compatibility %{buildroot}%{_gamesbindir}/%{name}-qt4-compatibility
