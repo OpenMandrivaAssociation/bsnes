@@ -53,7 +53,7 @@ settings, filters/shaders and hardware combination.
 
 %package -n %{name}-qt4-compatibility
 Summary:	Super Nintendo Entertainment System (SNES) Emulator
-License:	GPLv2
+License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
 Provides:	%{name}-binary
@@ -70,7 +70,7 @@ BSNES binary compiled with Qt4/compatibility profile.
 
 %package -n %{name}-gtk-compatibility
 Summary:	Super Nintendo Entertainment System (SNES) Emulator
-License:	GPLv2
+License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
 Provides:	%{name}-binary
@@ -87,7 +87,7 @@ BSNES binary compiled with GTK/compatibility profile.
 
 %package -n %{name}-qt4-accuracy
 Summary:	Super Nintendo Entertainment System (SNES) Emulator
-License:	GPLv2
+License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
 Provides:	%{name}-binary
@@ -104,7 +104,7 @@ BSNES binary compiled with Qt4/accuracy profile.
 
 %package -n %{name}-gtk-accuracy
 Summary:	Super Nintendo Entertainment System (SNES) Emulator
-License:	GPLv2
+License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
 Provides:	%{name}-binary
@@ -121,7 +121,7 @@ BSNES binary compiled with GTK/accuracy profile.
 
 %package -n %{name}-qt4-performance
 Summary:	Super Nintendo Entertainment System (SNES) Emulator
-License:	GPLv2
+License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
 Provides:	%{name}-binary
@@ -138,7 +138,7 @@ BSNES binary compiled with Qt4/performance profile.
 
 %package -n %{name}-gtk-performance
 Summary:	Super Nintendo Entertainment System (SNES) Emulator
-License:	GPLv2
+License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
 Provides:	%{name}-binary
