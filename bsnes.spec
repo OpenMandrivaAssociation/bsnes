@@ -7,7 +7,7 @@ Summary:	Super Nintendo Entertainment System (SNES) Emulator
 Name:		%{name}
 Version:	%{version}
 Release:	%{release}
-License:	GPLv2
+License:	GPLv3
 Group:		Emulators
 Source0:	%{name}_v%{vernumber}-source.tar.bz2
 Patch0:		bsnes-083-datapath.patch
