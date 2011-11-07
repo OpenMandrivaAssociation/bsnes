@@ -1,4 +1,4 @@
-%define vernumber 083
+%define vernumber 084
 %define name	bsnes
 %define version 0.%{vernumber}
 %define release %mkrel 1
@@ -20,6 +20,7 @@ BuildRequires:	qt4-devel
 BuildRequires:	SDL-devel
 BuildRequires:	pulseaudio-devel
 BuildRequires:	libgomp-devel
+BuildRequires:	gcc >= 4.5
 Requires:	%{name}-binary
 
 %description
@@ -155,7 +156,7 @@ BSNES binary compiled with GTK/performance profile.
 #----------------------------------------------------------------------------
 
 %prep
-%setup -qn %{name}_v%{vernumber}-source
+%setup -c -qn %{name}_v%{vernumber}-source
 %patch0 -p1
 
 %build
