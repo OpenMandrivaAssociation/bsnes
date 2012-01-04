@@ -1,4 +1,4 @@
-%define vernumber 084
+%define vernumber 085
 %define name	bsnes
 %define version 0.%{vernumber}
 %define release %mkrel 1
@@ -10,7 +10,7 @@ Release:	%{release}
 License:	GPLv3
 Group:		Emulators
 Source0:	%{name}_v%{vernumber}-source.tar.bz2
-Patch0:		bsnes-083-datapath.patch
+Patch0:		bsnes-085-datapath.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
 BuildRequires:	libao-devel
 BuildRequires:	libxv-devel
@@ -47,7 +47,7 @@ settings, filters/shaders and hardware combination.
 %{_datadir}/pixmaps/%{name}.png
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/shaders
-%{_datadir}/%{name}/cheats.bml
+%{_datadir}/%{name}/cheats.xml
 %{_datadir}/%{name}/shaders/*.shader
 %{_libdir}/%{name}/filters/*.filter
 
@@ -156,7 +156,7 @@ BSNES binary compiled with GTK/performance profile.
 #----------------------------------------------------------------------------
 
 %prep
-%setup -c -qn %{name}_v%{vernumber}-source
+%setup -qn %{name}_v%{vernumber}-source
 %patch0 -p1
 
 %build
@@ -227,7 +227,7 @@ pushd %{name}
 %__install -m 644 data/%{name}.png %{buildroot}%{_datadir}/pixmaps/%{name}.png
 
 #install cheats
-%__install -m 644 data/cheats.bml %{buildroot}%{_datadir}/%{name}/cheats.bml
+%__install -m 644 data/cheats.xml %{buildroot}%{_datadir}/%{name}/cheats.xml
 
 #install binaries
 %__install -m 755 build/%{name}-qt4-compatibility %{buildroot}%{_gamesbindir}/%{name}-qt4-compatibility
