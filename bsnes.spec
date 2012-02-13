@@ -1,17 +1,16 @@
-%define vernumber 085
-%define name	bsnes
-%define version 0.%{vernumber}
-%define release %mkrel 1
+%define		vernumber 086
 
+Name:		bsnes
+Version:	0.%{vernumber}
+Release:	%mkrel 1
 Summary:	Super Nintendo Entertainment System (SNES) Emulator
-Name:		%{name}
-Version:	%{version}
-Release:	%{release}
 License:	GPLv3
 Group:		Emulators
+URL:		http://byuu.org/bsnes/
 Source0:	%{name}_v%{vernumber}-source.tar.bz2
-Patch0:		bsnes-085-datapath.patch
-BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
+Patch0:		bsnes-086-datapath.patch
+Patch1:		bsnes-086-smpclass.patch
+Patch2:		bsnes-086-debuginfo.patch
 BuildRequires:	libao-devel
 BuildRequires:	libxv-devel
 BuildRequires:	openal-devel
@@ -21,7 +20,7 @@ BuildRequires:	SDL-devel
 BuildRequires:	pulseaudio-devel
 BuildRequires:	libgomp-devel
 BuildRequires:	gcc >= 4.5
-Requires:	%{name}-binary
+Requires:	%{name}-binary = %{EVRD}
 
 %description
 The purpose of BSNES is a bit different from other emulators.
@@ -58,7 +57,7 @@ Summary:	Super Nintendo Entertainment System (SNES) Emulator
 License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
-Provides:	%{name}-binary
+Provides:	%{name}-binary = %{EVRD}
 
 %description -n %{name}-qt4-compatibility
 BSNES binary compiled with Qt4/compatibility profile.
@@ -75,7 +74,7 @@ Summary:	Super Nintendo Entertainment System (SNES) Emulator
 License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
-Provides:	%{name}-binary
+Provides:	%{name}-binary = %{EVRD}
 
 %description -n %{name}-gtk-compatibility
 BSNES binary compiled with GTK/compatibility profile.
@@ -92,7 +91,7 @@ Summary:	Super Nintendo Entertainment System (SNES) Emulator
 License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
-Provides:	%{name}-binary
+Provides:	%{name}-binary = %{EVRD}
 
 %description -n %{name}-qt4-accuracy
 BSNES binary compiled with Qt4/accuracy profile.
@@ -109,7 +108,7 @@ Summary:	Super Nintendo Entertainment System (SNES) Emulator
 License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
-Provides:	%{name}-binary
+Provides:	%{name}-binary = %{EVRD}
 
 %description -n %{name}-gtk-accuracy
 BSNES binary compiled with GTK/accuracy profile.
@@ -126,7 +125,7 @@ Summary:	Super Nintendo Entertainment System (SNES) Emulator
 License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
-Provides:	%{name}-binary
+Provides:	%{name}-binary = %{EVRD}
 
 %description -n %{name}-qt4-performance
 BSNES binary compiled with Qt4/performance profile.
@@ -143,7 +142,7 @@ Summary:	Super Nintendo Entertainment System (SNES) Emulator
 License:	GPLv3
 Group:		Emulators
 Requires:	%{name}
-Provides:	%{name}-binary
+Provides:	%{name}-binary = %{EVRD}
 
 %description -n %{name}-gtk-performance
 BSNES binary compiled with GTK/performance profile.
@@ -158,6 +157,8 @@ BSNES binary compiled with GTK/performance profile.
 %prep
 %setup -qn %{name}_v%{vernumber}-source
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 pushd %{name}
@@ -169,51 +170,38 @@ pushd %{name}
 %__mkdir build
 
 %make compiler=gcc phoenix=qt profile=compatibility
-
-mv out/%{name} build/%{name}-qt4-compatibility
-
-make clean
+%__mv out/%{name} build/%{name}-qt4-compatibility
+%__make clean
 
 %make compiler=gcc phoenix=gtk profile=compatibility
-
-mv out/%{name} build/%{name}-gtk-compatibility
-
-make clean
+%__mv out/%{name} build/%{name}-gtk-compatibility
+%__make clean
 
 %make compiler=gcc phoenix=qt profile=accuracy
-
-mv out/%{name} build/%{name}-qt4-accuracy
-
-make clean
+%__mv out/%{name} build/%{name}-qt4-accuracy
+%__make clean
 
 %make compiler=gcc phoenix=gtk profile=accuracy
-
-mv out/%{name} build/%{name}-gtk-accuracy
-
-make clean
+%__mv out/%{name} build/%{name}-gtk-accuracy
+%__make clean
 
 %make compiler=gcc phoenix=gtk profile=performance
-
-mv out/%{name} build/%{name}-gtk-performance
-
-make clean
+%__mv out/%{name} build/%{name}-gtk-performance
+%__make clean
 
 %make compiler=gcc phoenix=qt profile=performance
-
-mv out/%{name} build/%{name}-qt4-performance
+%__mv out/%{name} build/%{name}-qt4-performance
 
 popd
 
 pushd snesfilter
-
 %make compiler=gcc
-
 popd
 
-sed -i "s/g++-4.5/g++/" snespurify/cc-gtk.sh
+%__sed -i "s/g++-4.5/g++/" snespurify/cc-gtk.sh
 
 %install
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+%__rm -rf %{buildroot}
 
 %__mkdir -p %{buildroot}%{_gamesbindir}
 %__mkdir -p %{buildroot}%{_datadir}/applications
@@ -247,7 +235,7 @@ popd
 
 
 #install XDG menu entries
-cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-compatibility.desktop << EOF
+%__cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-compatibility.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (Qt4/Compatibility)
@@ -260,7 +248,7 @@ Type=Application
 Categories=Qt;Game;Emulator;
 EOF
 
-cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-compatibility.desktop << EOF
+%__cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-compatibility.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (GTK/Compatibility)
@@ -273,7 +261,7 @@ Type=Application
 Categories=GTK;Game;Emulator;
 EOF
 
-cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-accuracy.desktop << EOF
+%__cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-accuracy.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (Qt4/Accuracy)
@@ -286,7 +274,7 @@ Type=Application
 Categories=Qt;Game;Emulator;
 EOF
 
-cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-accuracy.desktop << EOF
+%__cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-accuracy.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (GTK/Accuracy)
@@ -299,7 +287,7 @@ Type=Application
 Categories=GTK;Game;Emulator;
 EOF
 
-cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-performance.desktop << EOF
+%__cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-performance.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (Qt4/Performance)
@@ -312,7 +300,7 @@ Type=Application
 Categories=Qt;Game;Emulator;
 EOF
 
-cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-performance.desktop << EOF
+%__cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-performance.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (GTK/Performance)
@@ -326,5 +314,5 @@ Categories=GTK;Game;Emulator;
 EOF
 
 %clean
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+%__rm -rf %{buildroot}
 
