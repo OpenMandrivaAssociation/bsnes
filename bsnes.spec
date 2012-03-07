@@ -1,4 +1,4 @@
-%define		vernumber 086
+%define		vernumber 087
 
 Name:		bsnes
 Version:	0.%{vernumber}
@@ -8,8 +8,7 @@ License:	GPLv3
 Group:		Emulators
 URL:		http://byuu.org/bsnes/
 Source0:	%{name}_v%{vernumber}-source.tar.bz2
-Patch0:		bsnes-086-datapath.patch
-Patch1:		bsnes-086-smpclass.patch
+Patch0:		bsnes-087-datapath.patch
 Patch2:		bsnes-086-debuginfo.patch
 BuildRequires:	libao-devel
 BuildRequires:	libxv-devel
@@ -157,7 +156,6 @@ BSNES binary compiled with GTK/performance profile.
 %prep
 %setup -qn %{name}_v%{vernumber}-source
 %patch0 -p1
-%patch1 -p1
 %patch2 -p1
 
 %build
