@@ -2,15 +2,15 @@
 
 Name:		bsnes
 Version:	0.%{vernumber}
-Release:	%mkrel 1
-Summary:	Super Nintendo Entertainment System (SNES) Emulator
+Release:	%mkrel 2
+Summary:	A multi-system emulator (SNES, NES, GB, GBA, GBC)
 License:	GPLv3
 Group:		Emulators
 URL:		http://byuu.org/bsnes/
 Source0:	http://bsnes.googlecode.com/files/%{name}_v%{vernumber}-source.tar.xz
 Patch0:		bsnes-088-datapath.patch
-Patch2:		bsnes-088-debuginfo.patch
-Patch3:		bsnes-088-march.patch
+Patch1:		bsnes-088-gtkfix.patch
+Patch2:		bsnes-088-makefile.patch
 BuildRequires:	libao-devel
 BuildRequires:	libxv-devel
 BuildRequires:	openal-devel
@@ -33,10 +33,15 @@ The emulator itself was not derived from any existing emulator source
 code, such as SNES9x. It was written from scratch by myself.
 Any similarities to other emulators are merely coincidental.
 
-BSNES also has Game Boy and NES emulation support (not very complete yet).
+BSNES also has Game Boy (GB, GBC and GBA) and NES emulation support.
 
-Important! Most likely you won't be able to run ROMs until you "purify"
-them with snespurify utility.
+Note that you will need the GBA BIOS image to use this. There will not
+be any high-level emulation of the BIOS functions for obvious reasons.
+Name the file "bios.rom", and place it inside the
+"/var/games/bsnes/Game Boy Advance.sys/" directory.
+
+Important! Most likely you won't be able to run SNES ROMs until you
+"purify" them with snespurify utility.
 
 Warning! BSNES is still not very stable and may crash with some video
 settings, filters/shaders and hardware combination.
@@ -158,8 +163,8 @@ BSNES binary compiled with GTK/performance profile.
 %prep
 %setup -qn %{name}_v%{vernumber}-source
 %patch0 -p1
+%patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 %build
 pushd %{name}
@@ -167,6 +172,8 @@ pushd %{name}
 %if %{mdvver} > 201100
 %__perl -pi -e "s/Q_MOC_OUTPUT_REVISION != 62/Q_MOC_OUTPUT_REVISION != 63/g" phoenix/qt/platform.moc
 %endif
+
+export CFLAGS="%{optflags}"
 
 %__mkdir build
 
