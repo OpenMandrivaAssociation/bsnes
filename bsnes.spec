@@ -1,4 +1,4 @@
-%define		vernumber 087
+%define		vernumber 088
 
 Name:		bsnes
 Version:	0.%{vernumber}
@@ -7,9 +7,9 @@ Summary:	Super Nintendo Entertainment System (SNES) Emulator
 License:	GPLv3
 Group:		Emulators
 URL:		http://byuu.org/bsnes/
-Source0:	%{name}_v%{vernumber}-source.tar.bz2
-Patch0:		bsnes-087-datapath.patch
-Patch2:		bsnes-086-debuginfo.patch
+Source0:	http://bsnes.googlecode.com/files/%{name}_v%{vernumber}-source.tar.xz
+Patch0:		bsnes-088-datapath.patch
+Patch2:		bsnes-088-debuginfo.patch
 BuildRequires:	libao-devel
 BuildRequires:	libxv-devel
 BuildRequires:	openal-devel
@@ -32,13 +32,20 @@ The emulator itself was not derived from any existing emulator source
 code, such as SNES9x. It was written from scratch by myself.
 Any similarities to other emulators are merely coincidental.
 
-BSNES also has Game Boy and NES emulation support (not very complete yet).
+BSNES also has Game Boy (GB, GBC, GBA) and NES emulation support.
 
 Important! Most likely you won't be able to run ROMs until you "purify"
 them with snespurify utility.
 
+Note that you will need the GBA BIOS image to use GBA emulation. There
+will not be any high-level emulation of the BIOS functions for obvious
+reasons. Name the file "bios.rom", and place it inside the
+"/var/games/bsnes/Game Boy Advance.sys/" folder.
+
 Warning! BSNES is still not very stable and may crash with some video
 settings, filters/shaders and hardware combination.
+
+It's highly recommended to use Qt4 version. GTK seems to be broken in 0.088.
 
 %files
 %defattr(-,root,root)
@@ -48,6 +55,7 @@ settings, filters/shaders and hardware combination.
 %{_datadir}/%{name}/cheats.xml
 %{_datadir}/%{name}/shaders/*.shader
 %{_libdir}/%{name}/filters/*.filter
+%{_var}/games/%{name}
 
 #----------------------------------------------------------------------------
 
@@ -196,16 +204,14 @@ pushd snesfilter
 %make compiler=gcc
 popd
 
-%__sed -i "s/g++-4.5/g++/" snespurify/cc-gtk.sh
-
 %install
 %__rm -rf %{buildroot}
 
-%__mkdir -p %{buildroot}%{_gamesbindir}
-%__mkdir -p %{buildroot}%{_datadir}/applications
-%__mkdir -p %{buildroot}%{_libdir}/%{name}/filters
-%__mkdir -p %{buildroot}%{_datadir}/%{name}/shaders
-%__mkdir -p %{buildroot}%{_datadir}/pixmaps
+%__mkdir_p %{buildroot}%{_gamesbindir}
+%__mkdir_p %{buildroot}%{_datadir}/applications
+%__mkdir_p %{buildroot}%{_libdir}/%{name}/filters
+%__mkdir_p %{buildroot}%{_datadir}/%{name}/shaders
+%__mkdir_p %{buildroot}%{_datadir}/pixmaps
 
 pushd %{name}
 
@@ -223,6 +229,12 @@ pushd %{name}
 %__install -m 755 build/%{name}-qt4-performance %{buildroot}%{_gamesbindir}/%{name}-qt4-performance
 %__install -m 755 build/%{name}-gtk-performance %{buildroot}%{_gamesbindir}/%{name}-gtk-performance
 
+#install profiles
+%__mkdir_p %{buildroot}%{_var}/games/%{name}
+%__cp -r profile/* %{buildroot}%{_var}/games/%{name}/
+%__chmod 777 -R %{buildroot}%{_var}/games/%{name}
+find %{buildroot}%{_var}/games/%{name} -type f -exec chmod 666 {} \;
+
 popd
 
 #install shaders
@@ -230,7 +242,6 @@ popd
 
 #install filters
 %__install -m 755 snesfilter/out/*.filter %{buildroot}%{_libdir}/%{name}/filters/
-
 
 #install XDG menu entries
 %__cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-compatibility.desktop << EOF
