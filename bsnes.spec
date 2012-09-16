@@ -1,8 +1,8 @@
-%define		vernumber 088
+%define		vernumber 091
 
 Name:		bsnes
 Version:	0.%{vernumber}
-Release:	%mkrel 2
+Release:	%mkrel 1
 Summary:	A multi-system emulator (SNES, NES, GB, GBA, GBC)
 License:	GPLv3
 Group:		Emulators
