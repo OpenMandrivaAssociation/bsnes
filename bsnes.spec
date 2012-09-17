@@ -162,9 +162,9 @@ BSNES binary compiled with GTK/performance profile.
 
 %prep
 %setup -qn %{name}_v%{vernumber}-source
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+# %patch0 -p1
+# %patch1 -p1
+# %patch2 -p1
 
 %build
 pushd %{name}
