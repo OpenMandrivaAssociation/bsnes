@@ -1,0 +1,12 @@
+diff -urN bsnes_v088-source/bsnes/target-ui/tools/cheat-editor.cpp bsnes_v088-source-patched/bsnes/target-ui/tools/cheat-editor.cpp
+--- bsnes_v088-source/bsnes/target-ui/tools/cheat-editor.cpp	2012-02-13 15:49:57.000000000 +1100
++++ bsnes_v088-source-patched/bsnes/target-ui/tools/cheat-editor.cpp	2012-04-27 04:21:21.853397451 +1100
+@@ -76,7 +76,7 @@
+   lstring cheatCodes;
+   for(unsigned n = 0; n < 128; n++) {
+     string code = cheatText[n][Code];
+-    if(cheatList.checked(n) && code != "") cheatCodes.append(code.replace(" ", ""));
++    if (code != "") {if(cheatList.checked(n)) cheatCodes.append(code.replace(" ", ""));}
+   }
+   interface->setCheatCodes(cheatCodes);
+ }

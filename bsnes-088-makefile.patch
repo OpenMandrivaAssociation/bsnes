@@ -1,0 +1,22 @@
+diff -urN bsnes_v088-source/bsnes/Makefile bsnes_v088-source-patched/bsnes/Makefile
+--- bsnes_v088-source/bsnes/Makefile	2012-04-24 21:30:52.000000000 +1100
++++ bsnes_v088-source-patched/bsnes/Makefile	2012-04-27 04:19:09.639317692 +1100
+@@ -13,8 +13,8 @@
+ # compiler
+ c       := $(compiler) -std=gnu99
+ cpp     := $(subst cc,++,$(compiler)) -std=gnu++0x
+-flags   := -I. -O3 -fomit-frame-pointer
+-link    := -s
++flags   := -I. $(CFLAGS)
++link    := 
+ objects := libco
+ 
+ # profile-guided optimization mode
+@@ -30,7 +30,6 @@
+ 
+ # platform
+ ifeq ($(platform),x)
+-  flags += -march=native
+   link += -ldl -lX11 -lXext
+ else ifeq ($(platform),osx)
+ else ifeq ($(platform),win)

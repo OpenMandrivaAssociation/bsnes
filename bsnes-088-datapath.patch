@@ -1,0 +1,74 @@
+diff -urN bsnes_v088-source-orig/bsnes/target-ui/general/main-window.cpp bsnes_v088-source-patched/bsnes/target-ui/general/main-window.cpp
+--- bsnes_v088-source-orig/bsnes/target-ui/general/main-window.cpp	2012-04-25 19:29:48.983420496 +1100
++++ bsnes_v088-source-patched/bsnes/target-ui/general/main-window.cpp	2012-04-26 19:55:00.497189970 +1100
+@@ -391,6 +391,14 @@
+     path = { application->userpath, "filters/" };
+     files = directory::files(path, "*.filter");
+   }
++  if(files.size() == 0) {
++#ifndef __x86_64__
++    path = "/usr/lib/bsnes/filters/";
++#else
++    path = "/usr/lib64/bsnes/filters/";
++#endif
++    files = directory::files(path, "*.filter");
++  }
+   array<RadioItem&> group;
+ 
+   settingsVideoFilterList = new RadioItem[files.size()];
+@@ -422,6 +430,10 @@
+     path = { application->userpath, "shaders/" };
+     files = directory::files(path, { "*.", config->video.driver, ".shader" });
+   }
++  if(files.size() == 0) {
++    path = "/usr/share/bsnes/shaders/";
++    files = directory::files(path, {"*.", config->video.driver, ".shader" });
++  }
+   array<RadioItem&> group;
+ 
+   settingsVideoShaderList = new RadioItem[files.size()];
+diff -urN bsnes_v088-source-orig/bsnes/target-ui/main.cpp bsnes_v088-source-patched/bsnes/target-ui/main.cpp
+--- bsnes_v088-source-orig/bsnes/target-ui/main.cpp	2012-04-25 19:29:48.982420493 +1100
++++ bsnes_v088-source-patched/bsnes/target-ui/main.cpp	2012-04-26 19:56:24.349219491 +1100
+@@ -8,6 +8,8 @@
+ string Application::path(const string &filename) {
+   string result = {basepath, filename};
+   if(file::exists(result)) return result;
++  result = {"/var/games/bsnes/", filename};
++  if(file::exists(result)) return result;
+   return {userpath, filename};
+ }
+ 
+diff -urN bsnes_v088-source-orig/bsnes/target-ui/Makefile bsnes_v088-source-patched/bsnes/target-ui/Makefile
+--- bsnes_v088-source-orig/bsnes/target-ui/Makefile	2012-04-25 19:29:48.982420493 +1100
++++ bsnes_v088-source-patched/bsnes/target-ui/Makefile	2012-04-26 19:55:00.498189970 +1100
+@@ -73,14 +73,9 @@
+ 	@echo Please do not run make install as root.
+ 	@echo The installer needs to know your home directory to install important files.
+ else ifeq ($(platform),x)
+-	sudo install -D -m 755 out/$(name) $(DESTDIR)$(prefix)/bin/$(name)
+-	sudo install -D -m 644 data/$(name).png $(DESTDIR)$(prefix)/share/pixmaps/$(name).png
+-	sudo install -D -m 644 data/$(name).desktop $(DESTDIR)$(prefix)/share/applications/$(name).desktop
+-
+-	mkdir -p ~/.config/$(name)
+-	cp -R profile/* ~/.config/$(name)
+-	cp data/cheats.xml ~/.config/$(name)/cheats.xml
+-	chmod -R 777 ~/.config/$(name)
++	install -D -m 755 out/$(name) $(DESTDIR)$(prefix)/bin/$(name)
++	install -D -m 644 data/$(name).png $(DESTDIR)$(prefix)/share/pixmaps/$(name).png
++	install -D -m 644 data/$(name).desktop $(DESTDIR)$(prefix)/share/applications/$(name).desktop
+ endif
+ 
+ uninstall:
+diff -urN bsnes_v088-source-orig/bsnes/target-ui/tools/cheat-database.cpp bsnes_v088-source-patched/bsnes/target-ui/tools/cheat-database.cpp
+--- bsnes_v088-source-orig/bsnes/target-ui/tools/cheat-database.cpp	2012-04-25 19:29:48.983420496 +1100
++++ bsnes_v088-source-patched/bsnes/target-ui/tools/cheat-database.cpp	2012-04-26 19:55:00.498189970 +1100
+@@ -34,7 +34,7 @@
+   cheatCode.reset();
+ 
+   string data;
+-  data.readfile(application->path("cheats.xml"));
++  data.readfile("/usr/share/bsnes/cheats.xml");
+   XML::Document document(data);
+   for(auto &node : document["database"]) {
+     if(node.name != "cartridge") continue;
