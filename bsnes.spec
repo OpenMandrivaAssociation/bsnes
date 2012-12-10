@@ -1,8 +1,8 @@
-%define		vernumber 091
+%define		vernumber 088
 
 Name:		bsnes
 Version:	0.%{vernumber}
-Release:	%mkrel 1
+Release:	3
 Summary:	A multi-system emulator (SNES, NES, GB, GBA, GBC)
 License:	GPLv3
 Group:		Emulators
@@ -11,13 +11,16 @@ Source0:	http://bsnes.googlecode.com/files/%{name}_v%{vernumber}-source.tar.xz
 Patch0:		bsnes-088-datapath.patch
 Patch1:		bsnes-088-gtkfix.patch
 Patch2:		bsnes-088-makefile.patch
-BuildRequires:	libao-devel
-BuildRequires:	libxv-devel
-BuildRequires:	openal-devel
-BuildRequires:	gtk+2-devel
+Patch3:		bsnes-088-gcc-workaround.patch
+Patch4:		bsnes-088-purify-fix1.patch
+Patch5:		bsnes-088-purify-fix2.patch
+BuildRequires:	pkgconfig(ao)
+BuildRequires:	pkgconfig(xv)
+BuildRequires:	pkgconfig(openal)
+BuildRequires:	pkgconfig(gtk+-2.0)
 BuildRequires:	qt4-devel
-BuildRequires:	SDL-devel
-BuildRequires:	pulseaudio-devel
+BuildRequires:	pkgconfig(sdl)
+BuildRequires:	pkgconfig(libpulse)
 BuildRequires:	libgomp-devel
 BuildRequires:	gcc >= 4.5
 Requires:	%{name}-binary = %{EVRD}
@@ -47,7 +50,6 @@ Warning! BSNES is still not very stable and may crash with some video
 settings, filters/shaders and hardware combination.
 
 %files
-%defattr(-,root,root)
 %{_datadir}/pixmaps/%{name}.png
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/shaders
@@ -69,7 +71,6 @@ Provides:	%{name}-binary = %{EVRD}
 BSNES binary compiled with Qt4/compatibility profile.
 
 %files -n %{name}-qt4-compatibility
-%defattr(-,root,root)
 %{_gamesbindir}/%{name}-qt4-compatibility
 %{_datadir}/applications/%{name}-qt4-compatibility.desktop
 
@@ -86,7 +87,6 @@ Provides:	%{name}-binary = %{EVRD}
 BSNES binary compiled with GTK/compatibility profile.
 
 %files -n %{name}-gtk-compatibility
-%defattr(-,root,root)
 %{_gamesbindir}/%{name}-gtk-compatibility
 %{_datadir}/applications/%{name}-gtk-compatibility.desktop
 
@@ -103,7 +103,6 @@ Provides:	%{name}-binary = %{EVRD}
 BSNES binary compiled with Qt4/accuracy profile.
 
 %files -n %{name}-qt4-accuracy
-%defattr(-,root,root)
 %{_gamesbindir}/%{name}-qt4-accuracy
 %{_datadir}/applications/%{name}-qt4-accuracy.desktop
 
@@ -120,7 +119,6 @@ Provides:	%{name}-binary = %{EVRD}
 BSNES binary compiled with GTK/accuracy profile.
 
 %files -n %{name}-gtk-accuracy
-%defattr(-,root,root)
 %{_gamesbindir}/%{name}-gtk-accuracy
 %{_datadir}/applications/%{name}-gtk-accuracy.desktop
 
@@ -137,7 +135,6 @@ Provides:	%{name}-binary = %{EVRD}
 BSNES binary compiled with Qt4/performance profile.
 
 %files -n %{name}-qt4-performance
-%defattr(-,root,root)
 %{_gamesbindir}/%{name}-qt4-performance
 %{_datadir}/applications/%{name}-qt4-performance.desktop
 
@@ -154,7 +151,6 @@ Provides:	%{name}-binary = %{EVRD}
 BSNES binary compiled with GTK/performance profile.
 
 %files -n %{name}-gtk-performance
-%defattr(-,root,root)
 %{_gamesbindir}/%{name}-gtk-performance
 %{_datadir}/applications/%{name}-gtk-performance.desktop
 
@@ -162,40 +158,43 @@ BSNES binary compiled with GTK/performance profile.
 
 %prep
 %setup -qn %{name}_v%{vernumber}-source
-# %patch0 -p1
-# %patch1 -p1
-# %patch2 -p1
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
 pushd %{name}
 
 %if %{mdvver} > 201100
-%__perl -pi -e "s/Q_MOC_OUTPUT_REVISION != 62/Q_MOC_OUTPUT_REVISION != 63/g" phoenix/qt/platform.moc
+perl -pi -e "s/Q_MOC_OUTPUT_REVISION != 62/Q_MOC_OUTPUT_REVISION != 63/g" phoenix/qt/platform.moc
 %endif
 
 export CFLAGS="%{optflags}"
 
-%__mkdir build
+mkdir build
 
 %make compiler=gcc phoenix=qt profile=compatibility
-%__mv out/%{name} build/%{name}-qt4-compatibility
-%__make clean
+mv out/%{name} build/%{name}-qt4-compatibility
+make clean
 
 %make compiler=gcc phoenix=gtk profile=compatibility
-%__mv out/%{name} build/%{name}-gtk-compatibility
-%__make clean
+mv out/%{name} build/%{name}-gtk-compatibility
+make clean
 
 %make compiler=gcc phoenix=qt profile=accuracy
-%__mv out/%{name} build/%{name}-qt4-accuracy
-%__make clean
+mv out/%{name} build/%{name}-qt4-accuracy
+make clean
 
 %make compiler=gcc phoenix=gtk profile=accuracy
-%__mv out/%{name} build/%{name}-gtk-accuracy
-%__make clean
+mv out/%{name} build/%{name}-gtk-accuracy
+make clean
 
 %make compiler=gcc phoenix=gtk profile=performance
-%__mv out/%{name} build/%{name}-gtk-performance
-%__make clean
+mv out/%{name} build/%{name}-gtk-performance
+make clean
 
 %make compiler=gcc phoenix=qt profile=performance
 %__mv out/%{name} build/%{name}-qt4-performance
@@ -207,46 +206,44 @@ pushd snesfilter
 popd
 
 %install
-%__rm -rf %{buildroot}
-
-%__mkdir_p %{buildroot}%{_gamesbindir}
-%__mkdir_p %{buildroot}%{_datadir}/applications
-%__mkdir_p %{buildroot}%{_libdir}/%{name}/filters
-%__mkdir_p %{buildroot}%{_datadir}/%{name}/shaders
-%__mkdir_p %{buildroot}%{_datadir}/pixmaps
+mkdir -p %{buildroot}%{_gamesbindir}
+mkdir -p %{buildroot}%{_datadir}/applications
+mkdir -p %{buildroot}%{_libdir}/%{name}/filters
+mkdir -p %{buildroot}%{_datadir}/%{name}/shaders
+mkdir -p %{buildroot}%{_datadir}/pixmaps
 
 pushd %{name}
 
 #install icon
-%__install -m 644 data/%{name}.png %{buildroot}%{_datadir}/pixmaps/%{name}.png
+install -m 644 data/%{name}.png %{buildroot}%{_datadir}/pixmaps/%{name}.png
 
 #install cheats
-%__install -m 644 data/cheats.xml %{buildroot}%{_datadir}/%{name}/cheats.xml
+install -m 644 data/cheats.xml %{buildroot}%{_datadir}/%{name}/cheats.xml
 
 #install binaries
-%__install -m 755 build/%{name}-qt4-compatibility %{buildroot}%{_gamesbindir}/%{name}-qt4-compatibility
-%__install -m 755 build/%{name}-gtk-compatibility %{buildroot}%{_gamesbindir}/%{name}-gtk-compatibility
-%__install -m 755 build/%{name}-qt4-accuracy %{buildroot}%{_gamesbindir}/%{name}-qt4-accuracy
-%__install -m 755 build/%{name}-gtk-accuracy %{buildroot}%{_gamesbindir}/%{name}-gtk-accuracy
-%__install -m 755 build/%{name}-qt4-performance %{buildroot}%{_gamesbindir}/%{name}-qt4-performance
-%__install -m 755 build/%{name}-gtk-performance %{buildroot}%{_gamesbindir}/%{name}-gtk-performance
+install -m 755 build/%{name}-qt4-compatibility %{buildroot}%{_gamesbindir}/%{name}-qt4-compatibility
+install -m 755 build/%{name}-gtk-compatibility %{buildroot}%{_gamesbindir}/%{name}-gtk-compatibility
+install -m 755 build/%{name}-qt4-accuracy %{buildroot}%{_gamesbindir}/%{name}-qt4-accuracy
+install -m 755 build/%{name}-gtk-accuracy %{buildroot}%{_gamesbindir}/%{name}-gtk-accuracy
+install -m 755 build/%{name}-qt4-performance %{buildroot}%{_gamesbindir}/%{name}-qt4-performance
+install -m 755 build/%{name}-gtk-performance %{buildroot}%{_gamesbindir}/%{name}-gtk-performance
 
 #install profiles
-%__mkdir_p %{buildroot}%{_var}/games/%{name}
-%__cp -r profile/* %{buildroot}%{_var}/games/%{name}/
-%__chmod 777 -R %{buildroot}%{_var}/games/%{name}
+mkdir -p %{buildroot}%{_var}/games/%{name}
+cp -r profile/* %{buildroot}%{_var}/games/%{name}/
+chmod 777 -R %{buildroot}%{_var}/games/%{name}
 find %{buildroot}%{_var}/games/%{name} -type f -exec chmod 666 {} \;
 
 popd
 
 #install shaders
-%__install -m 644 snesshader/*.OpenGL.shader %{buildroot}%{_datadir}/%{name}/shaders/
+install -m 644 snesshader/*.OpenGL.shader %{buildroot}%{_datadir}/%{name}/shaders/
 
 #install filters
-%__install -m 755 snesfilter/out/*.filter %{buildroot}%{_libdir}/%{name}/filters/
+install -m 755 snesfilter/out/*.filter %{buildroot}%{_libdir}/%{name}/filters/
 
 #install XDG menu entries
-%__cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-compatibility.desktop << EOF
+cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-compatibility.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (Qt4/Compatibility)
@@ -259,7 +256,7 @@ Type=Application
 Categories=Qt;Game;Emulator;
 EOF
 
-%__cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-compatibility.desktop << EOF
+cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-compatibility.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (GTK/Compatibility)
@@ -272,7 +269,7 @@ Type=Application
 Categories=GTK;Game;Emulator;
 EOF
 
-%__cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-accuracy.desktop << EOF
+cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-accuracy.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (Qt4/Accuracy)
@@ -285,7 +282,7 @@ Type=Application
 Categories=Qt;Game;Emulator;
 EOF
 
-%__cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-accuracy.desktop << EOF
+cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-accuracy.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (GTK/Accuracy)
@@ -298,7 +295,7 @@ Type=Application
 Categories=GTK;Game;Emulator;
 EOF
 
-%__cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-performance.desktop << EOF
+cat > %{buildroot}%{_datadir}/applications/%{name}-qt4-performance.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (Qt4/Performance)
@@ -311,7 +308,7 @@ Type=Application
 Categories=Qt;Game;Emulator;
 EOF
 
-%__cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-performance.desktop << EOF
+cat > %{buildroot}%{_datadir}/applications/%{name}-gtk-performance.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Name=BSNES (GTK/Performance)
@@ -324,6 +321,41 @@ Type=Application
 Categories=GTK;Game;Emulator;
 EOF
 
-%clean
-%__rm -rf %{buildroot}
 
+%changelog
+* Thu Apr 26 2012 Andrey Bondrov <abondrov@mandriva.org> 0.088-2mdv2012.0
++ Revision: 793644
+- Fix GTK version, build with system CFLAGS, update patches
+
+* Thu Apr 26 2012 Andrey Bondrov <abondrov@mandriva.org> 0.088-1
++ Revision: 793621
+- Disable hardcoded march
+- New version 0.088. GTK seems to be broken, so use Qt4 version instead
+
+* Wed Mar 07 2012 Andrey Bondrov <abondrov@mandriva.org> 0.087-1
++ Revision: 782729
+- New version 0.087
+
+* Mon Feb 13 2012 Andrey Bondrov <abondrov@mandriva.org> 0.086-1
++ Revision: 773861
+- New version 0.086, rediff datapath patch, add smpclass and debuginfo patches
+
+* Wed Jan 04 2012 Andrey Bondrov <abondrov@mandriva.org> 0.085-1
++ Revision: 753986
+- New version 0.085
+
+* Tue Nov 08 2011 Andrey Bondrov <abondrov@mandriva.org> 0.084-1
++ Revision: 728741
+- New version 0.084
+
+* Sat Oct 15 2011 Andrey Bondrov <abondrov@mandriva.org> 0.083-1
++ Revision: 704742
+- Add libgomp-devel to BuildRequires
+- New license since 0.083 (GPLv2 -> GPLv3)
+- New version 0.083, update patch0
+- New version 0.082
+- imported package bsnes
+
+
+* Wed Aug 17 2011 Andrey Bondrov <bondrov@math.dvgu.ru> 0.081-1mib2011.0
+- First release for Mandriva
