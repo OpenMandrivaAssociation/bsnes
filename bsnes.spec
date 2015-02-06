@@ -2,7 +2,7 @@
 
 Name:		bsnes
 Version:	0.%{vernumber}
-Release:	3
+Release:	4
 Summary:	A multi-system emulator (SNES, NES, GB, GBA, GBC)
 License:	GPLv3
 Group:		Emulators
