@@ -6,7 +6,7 @@ Release:	4
 Summary:	A multi-system emulator (SNES, NES, GB, GBA, GBC)
 License:	GPLv3
 Group:		Emulators
-URL:		http://byuu.org/bsnes/
+URL:		https://byuu.org/bsnes/
 Source0:	http://bsnes.googlecode.com/files/%{name}_v%{vernumber}-source.tar.xz
 Patch0:		bsnes-088-datapath.patch
 Patch1:		bsnes-088-gtkfix.patch
