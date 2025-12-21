@@ -14,6 +14,7 @@ Patch2:		bsnes-088-makefile.patch
 Patch3:		bsnes-088-gcc-workaround.patch
 Patch4:		bsnes-088-purify-fix1.patch
 Patch5:		bsnes-088-purify-fix2.patch
+BuildRequires:	make
 BuildRequires:	pkgconfig(ao)
 BuildRequires:	pkgconfig(xv)
 BuildRequires:	pkgconfig(openal)
